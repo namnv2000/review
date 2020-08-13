@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken")
 const User = require("../modal/user.modal")
+const dotenv = require("dotenv");
+dotenv.config();
 const {registerValidation , loginValidation} = require("../auth/validation")
 
 module.exports.login = async function(req, res){
@@ -9,7 +11,7 @@ module.exports.login = async function(req, res){
     if(!userLogin) return res.status(422).send(error.details[0].message)
     const passLogin = await User.findOne({password: req.body.password});
     if(!passLogin) return res.status(422).send(error.details[0].message)
-    var token = jwt.sign({_id: userLogin._id}, 'shhhhh')
+    var token = generateAccessToken({email: userLogin.email})
     // res.header("auth-token", token).send(token);
     res.status(200).send({
         id: userLogin._id,
@@ -39,14 +41,9 @@ module.exports.register  = async function(req, res){
 };
 
 module.exports.Verify =  function(req, res){
-    res.send("demo")
+    res.send("tested successfully")
 }
-// User.findOne({email: req.body.email}).exec((user) =>{
-//     var token = jwt.sign({_id: userLogin._id}, 'shhhhh');
-//     res.status(200).send({
-//     //   id: user._id,
-//       username: user.username,
-//       email: user.email,
-//       accessToken: token
-//     });
-// });
+
+function generateAccessToken(id) {
+    return jwt.sign(id, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
+}
