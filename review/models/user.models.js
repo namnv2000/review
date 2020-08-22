@@ -30,13 +30,7 @@ const userSchema = mongoose.Schema({
     },
     image: {
         required: false, type:String,  default : ''
-    },
-    token: [{
-        tokens: {
-            type: String,
-            required: true
-        }
-    }]
+    }
 })
 
 userSchema.pre('save', async function (next) {
@@ -49,10 +43,8 @@ userSchema.pre('save', async function (next) {
 
 userSchema.methods.generateAuthToken = async function() {
     const user = this
-    const tokens = jwt.sign({_id: user._id}, process.env.ACCESS_TOKEN_SECRET)
-    user.token = user.token.concat({tokens})
-    await user.save()
-    return tokens
+    const token = jwt.sign({email: user.email}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: 84000})
+    return token
 }
 
 userSchema.statics.findByCredentials = async (email, password) => {
