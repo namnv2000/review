@@ -4,39 +4,63 @@ const User = require("../models/user.models")
 module.exports.login = async function (req, res) {
     try {
         const { email, password } = req.body
-        let user = await User.findByCredentials(email, password)
-        if (!user) {
-            return res.status(401).send({ error: 'Login failed! Check authentication credentials' })
+        let users = await User.findByCredentials(email, password)
+        if (!users) {
+            return res.status(401).send({ error: 'Unauthorized' })
         }
-        const token = await user.generateAuthToken()
-        user = JSON.parse(JSON.stringify(user));
-        user['token'] = token;
-        delete user['password']
-        res.send({user})
+        const token = await users.generateAuthToken()
+        users = JSON.parse(JSON.stringify(users));
+        users['token'] = token;
+        delete users['password']
+        let user = {
+            email: users.email,
+            token: token,
+            username: users.username,
+            password: users.password,
+            bio: users.bio,
+            image: users.image
+        }
+        res.status(200).send({user})
     } catch (error) {
-        res.status(400).send({ error: error.message })
+        res.status(422).send({errors: {body: [error.message]}})
     }
 };
 
 module.exports.register = async function (req, res) {
     try {
-        let user = new User(req.body)
-        await user.save()
-        const token = await user.generateAuthToken()
-        user = JSON.parse(JSON.stringify(user));
-        user['token'] = token;
-        delete user['password']
+        let users = new User(req.body)
+        await users.save()
+        const token = await users.generateAuthToken()
+        users = JSON.parse(JSON.stringify(users));
+        users['token'] = token;
+        delete users['password']
+        let user = {
+            email: users.email,
+            token: token,
+            username: users.username,
+            password: users.password,
+            bio: users.bio,
+            image: users.image
+        }
         res.status(201).send({ user })
     } catch (error) {
-        res.status(400).send(error)
+        res.status(422).send({errors: {body: [error.message]}})
     }
 };
 
 module.exports.Verify = async function (req, res) {
-    let user = req.user
-    const token = await user.generateAuthToken()
-    user = JSON.parse(JSON.stringify(user));
-    delete user['password']
-    user['token'] = token;
-    res.send({user})
+    let users = req.user
+    const token = await users.generateAuthToken()
+    users = JSON.parse(JSON.stringify(users));
+    delete users['password']
+    users['token'] = token;
+    let user = {
+        email: users.email,
+        token: token,
+        username: users.username,
+        password: users.password,
+        bio: users.bio,
+        image: users.image
+    }
+    res.status(200).send({user})
 }
