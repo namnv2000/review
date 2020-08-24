@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const User = require('../models/user.models')
+const User = require('../models/user.model')
 
 const auth = async(req, res, next) => {
     const token = req.header('Authorization').replace('Bearer ', '')
@@ -14,7 +14,7 @@ const auth = async(req, res, next) => {
         req.user = user
         next()
     } catch (error) {
-        res.status(422).send({errors: {body: [error.message]}})
+        res.status(401).send('Unauthorized')
     }
 }
 

@@ -1,12 +1,12 @@
 const jwt = require("jsonwebtoken")
-const User = require("../models/user.models")
+const User = require("../models/user.model")
 
 module.exports.login = async function (req, res) {
     try {
         const { email, password } = req.body
         let users = await User.findByCredentials(email, password)
         if (!users) {
-            return res.status(401).send({ error: 'Unauthorized' })
+            return res.status(422).send({errors: {body: [error.message]}})
         }
         const token = await users.generateAuthToken()
         let user = {
