@@ -9,14 +9,10 @@ module.exports.login = async function (req, res) {
             return res.status(401).send({ error: 'Unauthorized' })
         }
         const token = await users.generateAuthToken()
-        users = JSON.parse(JSON.stringify(users));
-        users['token'] = token;
-        delete users['password']
         let user = {
             email: users.email,
             token: token,
             username: users.username,
-            password: users.password,
             bio: users.bio,
             image: users.image
         }
@@ -31,14 +27,10 @@ module.exports.register = async function (req, res) {
         let users = new User(req.body)
         await users.save()
         const token = await users.generateAuthToken()
-        users = JSON.parse(JSON.stringify(users));
-        users['token'] = token;
-        delete users['password']
         let user = {
             email: users.email,
             token: token,
             username: users.username,
-            password: users.password,
             bio: users.bio,
             image: users.image
         }
@@ -51,14 +43,10 @@ module.exports.register = async function (req, res) {
 module.exports.Verify = async function (req, res) {
     let users = req.user
     const token = await users.generateAuthToken()
-    users = JSON.parse(JSON.stringify(users));
-    delete users['password']
-    users['token'] = token;
     let user = {
         email: users.email,
         token: token,
         username: users.username,
-        password: users.password,
         bio: users.bio,
         image: users.image
     }
