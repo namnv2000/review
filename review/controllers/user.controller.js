@@ -43,15 +43,19 @@ module.exports.register = async function (req, res) {
 module.exports.Verify = async function (req, res) {
     try {
         let users = req.user
-        const token = req.token
-        let user = {
-            email: users.email,
-            token: token,
-            username: users.username,
-            bio: users.bio,
-            image: users.image
+        if (users) {
+            const token = req.token
+            let user = {
+                email: users.email,
+                token: token,
+                username: users.username,
+                bio: users.bio,
+                image: users.image
+            }
+            res.status(200).send({user})
+        }else {
+            res.status(401).send({errors: {body: [error.message]}})
         }
-    res.status(200).send({user})
     } catch (error) {
         res.status(422).send({errors: {body: [error.message]}})
     }
