@@ -7,5 +7,5 @@ router.post('/users', controller.register)
 
 router.post('/users/login', controller.login)
 
-router.get('/user', auth.VerifyToken, controller.Verify)
+router.get('/user', auth, controller.Verify)
 module.exports = router
